@@ -74,7 +74,7 @@ def main():
             if status == "logged out":
                 print("hello user %s" %user)
                 event[user] = "login"
-                to_login.append(user)
+                
             elif status == "logged in":
                 # we will not logout a user if he is logged in and one of the
                 # devices is online
