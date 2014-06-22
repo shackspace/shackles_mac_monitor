@@ -55,14 +55,15 @@ def main():
         except: print("%s was not in the last poll of macs"%mac)
     # removed all the new macs, go through the list of last macs and
     # log out every old user
-    for old_macs in last_macs:
-        ret=requests.get(shackles_host+"/api/rfid/"+mac)
+    for old_mac in last_macs:
+        ret=requests.get(shackles_host+"/api/rfid/"+old_mac)
         if ret.ok:
             j = ret.json()
             user = j["_id"]
             status = j["status"]
             # log out logged in users if none of their devices is online
             if status == "logged in":
+                print("logging out %s"%user)
                 event[user] = "logout"
         
     for mac in all_macs:
@@ -94,20 +95,27 @@ def main():
         if state == "logout":
             print("logging out %s"%user)
             ret = requests.get(shackles_host+"/api/user/"+user+"/logout")
-            print(ret.content.decode())
+            tell_gobbelz("Bye Bye, %s"%user)
         elif state == "here":
             print("user %s is still here"%user)
         elif state == "refresh":
             print("refreshing login of user %s" %user)
             ret = requests.get(shackles_host+"/api/user/"+user+"/login")
-            print(ret.content.decode())
         elif state == "login":
             print("hello user %s" %user)
             ret = requests.get(shackles_host+"/api/user/"+user+"/login")
-            print(ret.content.decode())
+            tell_gobbelz("Say hello to %s"%user)
     set_last_macs(all_macs)
 
-
+def tell_gobbelz(text):
+    import requests
+    import json
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    data = {'text': text}
+    try:
+        requests.post("http://kiosk.shack:8080/say/",
+                      data=json.dumps(data), headers=headers)
+    except Exception as e: print("cannot tell gobbelz: %s" %str(e))
 if __name__ == "__main__":
     import time
     main()
