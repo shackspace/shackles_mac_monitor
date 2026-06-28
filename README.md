@@ -1,3 +1,5 @@
+migrated to new location: https://codeberg.org/shackspace/shackles_mac_monitor
+
 # Shackles MAC Monitor
 
 monitors joins/leaves in the shack network and sends status to shackles
